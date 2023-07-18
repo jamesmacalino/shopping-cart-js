@@ -1,11 +1,11 @@
 // simulate getting products from DataBase
 const products = [
-  { name: "Apples_:", country: "Italy", cost: 3, instock: 10 },
-  { name: "Oranges:", country: "Spain", cost: 4, instock: 3 },
-  { name: "Beans__:", country: "USA", cost: 2, instock: 5 },
-  { name: "Cabbage:", country: "USA", cost: 1, instock: 8 },
-  { name: "Nuts:", country: "Philippines", cost: 8, instock: 3 },
-  { name: "Pecans:", country: "USA", cost: 10, instock: 8 }
+  { name: "apples", country: "Italy", cost: 3, instock: 10 },
+  { name: "oranges", country: "Spain", cost: 4, instock: 3 },
+  { name: "beans", country: "USA", cost: 2, instock: 5 },
+  { name: "cabbage", country: "USA", cost: 1, instock: 8 },
+  { name: "nuts", country: "Philippines", cost: 8, instock: 3 },
+  { name: "pecans", country: "USA", cost: 10, instock: 8 }
 ];
 //=========Cart=============
 const Cart = (props) => {
@@ -104,13 +104,23 @@ const Products = (props) => {
   const addToCart = (e) => {
     let name = e.target.name;
     let item = items.filter((item) => item.name == name);
+    if (item[0].instock == 0) return;
+    item[0].instock = item[0].instock - 1;
     console.log(`add to Cart ${JSON.stringify(item)}`);
     setCart([...cart, ...item]);
     //doFetch(query);
   };
-  const deleteCartItem = (index) => {
-    let newCart = cart.filter((item, i) => index != i);
+  const deleteCartItem = (delIndex) => {
+    // this is the index in the cart not in the Product List
+
+    let newCart = cart.filter((item, i) => delIndex != i);
+    let target = cart.filter((item, index) => delIndex == index);
+    let newItems = items.map((item, index) => {
+      if (item.name == target[0].name) item.instock = item.instock + 1;
+      return item;
+    });
     setCart(newCart);
+    setItems(newItems);
   };
   const photos = ["apple.png", "orange.png", "beans.png", "cabbage.png", "nuts.jpg", "pecans.jpg"];
 
@@ -126,7 +136,7 @@ const Products = (props) => {
         */}
         <Image src={url} width={70} roundedCircle></Image>
         <Button variant="primary" size="large">
-          {item.name}:{item.cost}
+          {item.name}: ${item.cost}, {item.instock} avail
         </Button>
         <input name={item.name} type="submit" onClick={addToCart}></input>
       </li>
@@ -151,7 +161,7 @@ const Products = (props) => {
     let final = cart.map((item, index) => {
       return (
         <div key={index} index={index}>
-          {item.name}
+          {item.name} ${item.cost}
         </div>
       );
     });
